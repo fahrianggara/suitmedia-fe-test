@@ -1,5 +1,6 @@
 <script setup>
 import Menu from './Menu.vue';
+import { ref } from 'vue';
 </script>
 
 <template>
@@ -9,17 +10,9 @@ import Menu from './Menu.vue';
         <img src="/logo.png" alt="Logo" class="h-17 object-contain" />
       </div>
       
-      <div>
-        <Menu />
+      <div class="menu">
+        <Menu class="flex items-center gap-6 text-white" />
       </div>
-      <!-- <ul class="flex items-center gap-6 text-white">
-        <li class=""><a href="/">Work</a></li>
-        <li class=""><a href="/about">About</a></li>
-        <li class=""><a href="/services">Services</a></li>
-        <li class=""><a href="/ideas">Ideas</a></li>
-        <li class=""><a href="/careers">Careers</a></li>
-        <li class=""><a href="/contact">Contact</a></li>
-      </ul> -->
     </nav>
   </header>
 </template>

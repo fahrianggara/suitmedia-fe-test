@@ -13,3 +13,24 @@
   @apply max-w-7xl w-[calc(100%-20px)] sm:w-[calc(100%-30px)] mx-auto 
 	px-2 md:px-0;
 }
+
+.menu a {
+  position: relative;
+  @apply transition-all duration-200 ease-in-out;
+}
+
+.menu a::after {
+  content: '';
+  @apply absolute -bottom-[7px] left-0 w-full h-[2px] bg-white;
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform 0.2s ease-in-out;
+}
+
+.menu a:hover::after {
+  transform: scaleX(1);
+}
+
+.menu a.active::after {
+  transform: scaleX(1);
+}
