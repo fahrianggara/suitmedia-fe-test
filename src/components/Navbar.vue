@@ -15,6 +15,7 @@ const handleScroll = () => {
   const currentY = window.scrollY
   isScrollingDown.value = currentY > lastScrollY
   lastScrollY = currentY
+  closeMenu() // Close menu on scroll
 }
 
 onMounted(() => {
@@ -53,11 +54,11 @@ onUnmounted(() => {
   </header>
 
   <Transition name="show-mobile-overlay">
-    <div v-if="isOpen" class="mobile-overlay" @click="closeMenu"></div>
+    <div v-if="isOpen" class="mobile-overlay" :class="{'height-100': isScrollingDown}" @click="closeMenu"></div>
   </Transition>
 
   <Transition name="show-mobile-nav">
-    <div v-if="isOpen" class="mobile-menu" :class="{ open: isOpen }">
+    <div v-if="isOpen" class="mobile-menu" :class="{ open: isOpen, 'height-100': isScrollingDown }">
       <Menu @close-menu="closeMenu" />
     </div>
   </Transition>
