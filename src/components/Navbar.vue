@@ -3,22 +3,34 @@ import Menu from './Menu.vue'
 import { ref, onMounted, onUnmounted } from 'vue'
 
 const isOpen = ref(false)
+
 const useIsMobile = window.innerWidth < 768 // Adjust based on your breakpoint
 const toggleMenu = () => isOpen.value = !isOpen.value
 const closeMenu = () => isOpen.value = false
 const handleResize = () => { if (useIsMobile) closeMenu() }
 
+const isScrollingDown = ref(false)
+let lastScrollY = window.scrollY
+const handleScroll = () => {
+  const currentY = window.scrollY
+  isScrollingDown.value = currentY > lastScrollY
+  lastScrollY = currentY
+}
+
 onMounted(() => {
+  window.addEventListener('scroll', handleScroll)
   window.addEventListener('resize', handleResize)
 })
 
 onUnmounted(() => {
+  window.removeEventListener('scroll', handleScroll)
   window.removeEventListener('resize', handleResize)
 })
 </script>
 
 <template>
-  <header class="fixed w-full z-[999] bg-primary">
+  <header class="fixed w-full z-[999] bg-primary transition-transform duration-300"
+  :class="{ '-translate-y-[101%]': isScrollingDown }">
     <nav class="container h-[70px] flex items-center justify-between">
       <div>
         <img src="/logo.png" alt="Logo" class="h-16 object-contain" />
@@ -30,7 +42,7 @@ onUnmounted(() => {
       </div>
 
       <!-- Mobile Hamburger -->
-      <div class="md:hidden block" v-if="useIsMobile">
+      <div class="md:hidden block">
         <div class="menu-button" :class="{ open: isOpen }" @click="toggleMenu">
           <span></span>
           <span></span>
