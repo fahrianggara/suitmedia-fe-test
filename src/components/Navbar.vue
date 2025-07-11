@@ -3,19 +3,25 @@ import Menu from './Menu.vue'
 import { ref, onMounted, onUnmounted } from 'vue'
 
 const isOpen = ref(false)
+const isScrollingDown = ref(false)
+const isAtTop = ref(true)
 
-const useIsMobile = window.innerWidth < 768 // Adjust based on your breakpoint
-const toggleMenu = () => isOpen.value = !isOpen.value
+const useIsMobile = window.innerWidth < 768
+const toggleMenu = () => {
+  isOpen.value = !isOpen.value
+  isAtTop.value = isOpen.value || window.scrollY <= 10
+}
+
 const closeMenu = () => isOpen.value = false
 const handleResize = () => { if (useIsMobile) closeMenu() }
-
-const isScrollingDown = ref(false)
 let lastScrollY = window.scrollY
+
 const handleScroll = () => {
   const currentY = window.scrollY
   isScrollingDown.value = currentY > lastScrollY
+  isAtTop.value = currentY <= 10
   lastScrollY = currentY
-  closeMenu() // Close menu on scroll
+  closeMenu() // optional
 }
 
 onMounted(() => {
@@ -29,9 +35,15 @@ onUnmounted(() => {
 })
 </script>
 
+
 <template>
-  <header class="fixed w-full z-[999] bg-primary transition-transform duration-300"
-  :class="{ '-translate-y-[101%]': isScrollingDown }">
+  <header
+    class="fixed w-full z-[999] transition-all duration-300 "
+    :class="[
+      isScrollingDown ? '-translate-y-[101%]' : 'translate-y-0',
+      isAtTop ? 'bg-primary' : 'bg-primary/87'
+    ]"
+  >
     <nav class="container h-[70px] flex items-center justify-between">
       <div>
         <img src="/logo.png" alt="Logo" class="h-16 object-contain" />
@@ -65,5 +77,7 @@ onUnmounted(() => {
 </template>
 
 <style scoped>
-
+header {
+  will-change: transform, background-color;
+}
 </style>
