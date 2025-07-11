@@ -25,12 +25,12 @@ onUnmounted(() => {
       </div>
 
       <!-- Desktop Menu -->
-      <div class="menu hidden md:block">
+      <div class="menu hidden md:block" v-if="!isOpen">
         <Menu class="flex items-center lg:gap-6 gap-5 text-white" />
       </div>
 
       <!-- Mobile Hamburger -->
-      <div class="md:hidden block">
+      <div class="md:hidden block" v-if="useIsMobile">
         <div class="menu-button" :class="{ open: isOpen }" @click="toggleMenu">
           <span></span>
           <span></span>
@@ -39,6 +39,10 @@ onUnmounted(() => {
       </div>
     </nav>
   </header>
+
+  <Transition name="show-mobile-overlay">
+    <div v-if="isOpen" class="mobile-overlay" @click="closeMenu"></div>
+  </Transition>
 
   <Transition name="show-mobile-nav">
     <div v-if="isOpen" class="mobile-menu" :class="{ open: isOpen }">
