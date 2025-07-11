@@ -3,7 +3,7 @@
 </script>
 
 <template>
-INI IDEAS PAGE
+INI HOME PAGE
 </template>
 
 <style scoped>
