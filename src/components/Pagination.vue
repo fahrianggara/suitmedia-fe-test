@@ -10,8 +10,16 @@ const navigate = (url) => {
   if (!url) return
   
   try {
-    const parsed = new URL(url)
-    let pageNumber = parsed.searchParams.get('page[number]') || parsed.searchParams.get('page')
+    let pageNumber
+    
+    if (url.startsWith('http')) {
+      const parsed = new URL(url)
+      pageNumber = parsed.searchParams.get('page[number]') || parsed.searchParams.get('page')
+    } else {
+      const urlParams = new URLSearchParams(url.split('?')[1])
+      pageNumber = urlParams.get('page[number]') || urlParams.get('page')
+    }
+
     emit('update:page', Number(pageNumber))
 
     // scroll to ideas-list - 100

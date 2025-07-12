@@ -75,9 +75,9 @@ const loadings = computed(() => Array.from({ length: perPage.value }))
       <Filtering v-model:perPage="perPage" v-model:sortBy="sortBy">
         <template #pagination-info>
           <p>
-            Showing {{ (page - 1) * perPage + 1 }} - 
-            {{ Math.min(page * perPage, ideasStore.meta.total) }} of 
-            {{ ideasStore.meta.total }}
+            Showing {{ ideasStore.meta.from ?? '0' }} - 
+            {{ ideasStore.meta.to ?? '0'  }} of 
+            {{ ideasStore.meta.total ?? '0' }}
           </p>
         </template>
       </Filtering>
