@@ -1,26 +1,40 @@
 <script setup>
 import Banner from '@/components/Ideas/Banner.vue'
 import Filtering from '@/components/Ideas/Filtering.vue'
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch, computed } from 'vue'
+import { useIdeasStore } from '@/stores/ideas'
+import { formatDate } from '@/composables/date'
 
 const perPage = ref(10)
-const sortBy = ref('newest')
+const sortBy = ref('-published_at')
+const page = ref(1)
 
-// Simulasi loading data
-const isLoading = ref(true)
-const items = ref([])
+const ideasStore = useIdeasStore()
 
-onMounted(() => {
-  setTimeout(() => {
-    items.value = Array.from({ length: 10 }, (_, i) => ({
-      id: i + 1,
-      img: 'https://placehold.co/600x400?text=Idea',
-      date: '11 Juli 2025',
-      title: 'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Explicabo, magnam.'
-    }))
-    isLoading.value = false
-  }, 2000)
+const fetch = () => {
+  ideasStore.fetchData({ page: page.value, perPage: perPage.value, sortBy: sortBy.value })
+}
+
+// Fetch on mount
+onMounted(fetch)
+
+// Fetch when filters or page change
+watch([perPage, sortBy], () => {
+  page.value = 1
+  fetch()
 })
+
+watch(page, fetch)
+
+const formattedIdeas = computed(() => {
+  return ideasStore.ideas.map((idea) => ({
+    ...idea,
+    formattedDate: formatDate(idea.published_at), // pakai helper kamu sendiri
+  }))
+})
+
+// Dummy data for skeletons
+const loadings = computed(() => Array.from({ length: perPage.value }))
 </script>
 
 <template>
@@ -31,46 +45,63 @@ onMounted(() => {
       <Filtering v-model:perPage="perPage" v-model:sortBy="sortBy" />
 
       <div class="grid lg:grid-cols-4 md:grid-cols-3 hpmd:grid-cols-2 grid-cols-1 gap-6 mt-8">
-        <div v-for="i in (isLoading ? 10 : items.length)" :key="i" 
-          class="bg-white rounded-lg shadow hover:shadow-lg transition-all hover:text-primary">
-          
-          <!-- Skeleton atau gambar -->
+        <div
+          v-for="(idea, index) in ideasStore.loading ? loadings : formattedIdeas"
+          :key="ideasStore.loading ? index : idea.id"
+          class="bg-white rounded-lg shadow hover:shadow-lg transition-all hover:text-primary"
+        >
+          <!-- Gambar -->
           <div class="w-full h-40 rounded-t-lg overflow-hidden">
-            <div v-if="isLoading" class="animate-pulse bg-gray-200 w-full h-full"></div>
-            <img v-else :src="items[i - 1].img" alt="Idea" loading="lazy"
-              class="w-full h-40 object-cover" />
+            <div v-if="ideasStore.loading" class="animate-pulse bg-gray-200 w-full h-full"></div>
+            <img v-else
+              :src="'https://placehold.co/600x400?text=' + idea.title"
+              :alt="`Image for ${idea.title}`"
+              loading="lazy"
+              class="w-full h-40 object-cover"
+            />
           </div>
 
+          <!-- Konten -->
           <div class="p-4">
-            <!-- Skeleton atau time -->
-            <div v-if="isLoading" class="animate-pulse h-4 bg-gray-200 w-24 mb-2 rounded"></div>
+            <!-- Tanggal -->
+            <div v-if="ideasStore.loading" class="animate-pulse h-4 bg-gray-200 w-24 mb-2 rounded"></div>
             <time v-else class="text-gray-500 text-[14px] mb-1 block uppercase">
-              {{ items[i - 1].date }}
+              {{ idea.formattedDate }}
             </time>
 
-            <!-- Skeleton atau h2 -->
-            <div v-if="isLoading" class="space-y-1">
+            <!-- Judul -->
+            <div v-if="ideasStore.loading" class="space-y-1">
               <div class="animate-pulse h-4 bg-gray-200 w-full rounded"></div>
               <div class="animate-pulse h-4 bg-gray-200 w-4/5 rounded"></div>
               <div class="animate-pulse h-4 bg-gray-200 w-3/5 rounded"></div>
             </div>
             <h2 v-else class="text-[16px] line-clamp-3">
-              {{ items[i - 1].title }}
+              {{ idea.title }}
             </h2>
           </div>
         </div>
       </div>
 
       <!-- Pagination -->
-      <div class="flex justify-center mt-8 mb-5">
+      <div class="flex justify-center mt-8 mb-5" v-if="!ideasStore.loading && ideasStore.meta.total > perPage">
         <nav class="flex items-center gap-1">
-          <button class="px-4 py-2 bg-white border border-gray-300 rounded-md hover:bg-gray-100"
-            :disabled="perPage <= 1" @click="perPage--">Previous</button>
-          <span class="px-4 py-2 bg-white border border-gray-300 rounded-md">1</span>
-          <span class="px-4 py-2 bg-white border border-gray-300 rounded-md">2</span>
-          <span class="px-4 py-2 bg-white border border-gray-300 rounded-md">5</span>
-          <button class="px-4 py-2 bg-white border border-gray-300 rounded-md hover:bg-gray-100"
-            @click="perPage++">Next</button>
+          <button
+            class="px-4 py-2 bg-white border border-gray-300 rounded-md hover:bg-gray-100"
+            :disabled="page === 1"
+            @click="page--"
+          >
+            Previous
+          </button>
+          <span class="px-4 py-2 bg-white border border-gray-300 rounded-md">
+            {{ page }}
+          </span>
+          <button
+            class="px-4 py-2 bg-white border border-gray-300 rounded-md hover:bg-gray-100"
+            :disabled="page === ideasStore.meta.last_page"
+            @click="page++"
+          >
+            Next
+          </button>
         </nav>
       </div>
     </div>
@@ -78,16 +109,5 @@ onMounted(() => {
 </template>
 
 <style scoped>
-/* Optional: improve skeleton pulse */
-@keyframes pulse {
-  0%, 100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.4;
-  }
-}
-.animate-pulse {
-  animation: pulse 1.5s ease-in-out infinite;
-}
+
 </style>

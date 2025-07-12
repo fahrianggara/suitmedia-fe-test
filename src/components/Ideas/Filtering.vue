@@ -1,7 +1,7 @@
 <script setup>
 import ArrowDown from '@/components/icons/ArrowDown.vue'
 import Select from '@/components/Select.vue'
-import { ref, watch, defineEmits, defineProps } from 'vue'
+import { ref, watch, defineEmits, defineProps, computed } from 'vue'
 
 const props = defineProps({
   perPage: {
@@ -10,7 +10,7 @@ const props = defineProps({
   },
   sortBy: {
     type: String,
-    default: 'newest'
+    default: '-published_at'
   }
 })
 
@@ -22,6 +22,17 @@ const localSortBy = ref(props.sortBy)
 // Watch local changes and emit
 watch(localPerPage, (val) => emit('update:perPage', val))
 watch(localSortBy, (val) => emit('update:sortBy', val))
+
+const sortLabel = computed(() => {
+  switch (localSortBy.value) {
+    case '-published_at':
+      return 'Newest'
+    case 'published_at':
+      return 'Oldest'
+    default:
+      return 'Sort By'
+  }
+})
 </script>
 
 <template>
@@ -52,16 +63,16 @@ watch(localSortBy, (val) => emit('update:sortBy', val))
         <span class="hplg:block hidden md:text-[16px] text-[15px]">Sort By: </span>
 
         <Select v-model="localSortBy" width="8rem">
-          <template #trigger="{ value }">
+          <template #trigger>
             <div class="bg-white border border-gray-300 px-4 py-2 rounded-md flex justify-between items-center">
-              <span>{{ value.toUpperCase() || 'Sort By' }}</span>
+              <span>{{ sortLabel }}</span>
               <ArrowDown />
             </div>
           </template>
 
           <template #default="{ select }">
-            <li @click="select('newest')" class="cursor-pointer px-4 py-2 hover:bg-gray-100">Newest</li>
-            <li @click="select('oldest')" class="cursor-pointer px-4 py-2 hover:bg-gray-100">Oldest</li>
+            <li @click="select('-published_at')" class="cursor-pointer px-4 py-2 hover:bg-gray-100">Newest</li>
+            <li @click="select('published_at')" class="cursor-pointer px-4 py-2 hover:bg-gray-100">Oldest</li>
           </template>
         </Select>
       </div>
