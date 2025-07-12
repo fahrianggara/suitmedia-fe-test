@@ -15,16 +15,15 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['update:perPage', 'update:sortBy'])
-
-const localPerPage = ref(props.perPage)
-const localSortBy = ref(props.sortBy)
+const refPerPage = ref(props.perPage)
+const refSortBy = ref(props.sortBy)
 
 // Watch local changes and emit
-watch(localPerPage, (val) => emit('update:perPage', val))
-watch(localSortBy, (val) => emit('update:sortBy', val))
+watch(refPerPage, (val) => emit('update:perPage', val))
+watch(refSortBy, (val) => emit('update:sortBy', val))
 
 const sortLabel = computed(() => {
-  switch (localSortBy.value) {
+  switch (refSortBy.value) {
     case '-published_at':
       return 'Newest'
     case 'published_at':
@@ -37,13 +36,13 @@ const sortLabel = computed(() => {
 
 <template>
   <div class="flex md:flex-row flex-col justify-between md:items-center gap-4 md:gap-0">
-    <p>Showing 1 - 10 of 100</p>
+    <slot name="pagination-info"></slot>
     
     <div class="flex flex-row hplg:gap-4 gap-2">
       <div class="flex flex-row gap-2 items-center">
         <span class="hplg:block hidden md:text-[16px] text-[15px]">Show per page: </span>
 
-        <Select v-model="localPerPage" width="6rem">
+        <Select v-model="refPerPage" width="6rem">
           <template #trigger="{ value }">
             <div class="bg-white border border-gray-300 px-4 py-2 rounded-md flex justify-between items-center">
               <span>{{ value || 'Perpage' }}</span>
@@ -62,7 +61,7 @@ const sortLabel = computed(() => {
       <div class="flex flex-row gap-2 items-center">
         <span class="hplg:block hidden md:text-[16px] text-[15px]">Sort By: </span>
 
-        <Select v-model="localSortBy" width="8rem">
+        <Select v-model="refSortBy" width="8rem">
           <template #trigger>
             <div class="bg-white border border-gray-300 px-4 py-2 rounded-md flex justify-between items-center">
               <span>{{ sortLabel }}</span>

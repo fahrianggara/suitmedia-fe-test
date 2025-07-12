@@ -1,4 +1,5 @@
 <script setup>
+import Pagination from '@/components/Pagination.vue'
 import Banner from '@/components/Ideas/Banner.vue'
 import Filtering from '@/components/Ideas/Filtering.vue'
 import { ref, onMounted, watch, computed } from 'vue'
@@ -12,26 +13,55 @@ const page = ref(1)
 const ideasStore = useIdeasStore()
 
 const fetch = () => {
-  ideasStore.fetchData({ page: page.value, perPage: perPage.value, sortBy: sortBy.value })
+  ideasStore.fetchData({ 
+    page: page.value, 
+    perPage: perPage.value, 
+    sortBy: sortBy.value 
+  })
+}
+
+// Handle page change from pagination
+const handlePageChange = (newPage) => {
+  page.value = newPage
 }
 
 // Fetch on mount
-onMounted(fetch)
+onMounted(() => {
+  fetch()
+})
 
-// Fetch when filters or page change
+// Fetch when filters change (reset to page 1)
 watch([perPage, sortBy], () => {
   page.value = 1
   fetch()
 })
 
-watch(page, fetch)
-
-const formattedIdeas = computed(() => {
-  return ideasStore.ideas.map((idea) => ({
-    ...idea,
-    formattedDate: formatDate(idea.published_at), // pakai helper kamu sendiri
-  }))
+// Fetch when page changes
+watch(page, (newPage, oldPage) => {
+  if (newPage !== oldPage) fetch()
 })
+
+// Format ideas with computed property
+const formattedIdeas = computed(() => {
+  return ideasStore.ideas.map((idea) => {
+    const pickImage = (group) =>
+      Array.isArray(group)
+        ? group.find(item => item.mime?.startsWith('image/'))?.url
+        : null
+
+    const imageUrl =
+      pickImage(idea.medium_image) ||
+      pickImage(idea.small_image) ||
+      pickImage(idea.large_image) ||
+      'https://placehold.co/600x400?text=No+Image';
+
+    return {
+      ...idea,
+      formattedDate: formatDate(idea.published_at),
+      imageUrl,
+    };
+  });
+});
 
 // Dummy data for skeletons
 const loadings = computed(() => Array.from({ length: perPage.value }))
@@ -40,9 +70,17 @@ const loadings = computed(() => Array.from({ length: perPage.value }))
 <template>
   <Banner />
 
-  <div class="wrapper z-10">
+  <div class="wrapper z-10" id="ideas-list">
     <div class="container pt-12 py-6">
-      <Filtering v-model:perPage="perPage" v-model:sortBy="sortBy" />
+      <Filtering v-model:perPage="perPage" v-model:sortBy="sortBy">
+        <template #pagination-info>
+          <p>
+            Showing {{ (page - 1) * perPage + 1 }} - 
+            {{ Math.min(page * perPage, ideasStore.meta.total) }} of 
+            {{ ideasStore.meta.total }}
+          </p>
+        </template>
+      </Filtering>
 
       <div class="grid lg:grid-cols-4 md:grid-cols-3 hpmd:grid-cols-2 grid-cols-1 gap-6 mt-8">
         <div
@@ -54,10 +92,11 @@ const loadings = computed(() => Array.from({ length: perPage.value }))
           <div class="w-full h-40 rounded-t-lg overflow-hidden">
             <div v-if="ideasStore.loading" class="animate-pulse bg-gray-200 w-full h-full"></div>
             <img v-else
-              :src="'https://placehold.co/600x400?text=' + idea.title"
+              :src="idea.imageUrl"
               :alt="`Image for ${idea.title}`"
               loading="lazy"
               class="w-full h-40 object-cover"
+              @error="(e) => e.target.src = 'https://placehold.co/600x400?text=' + idea.title"
             />
           </div>
 
@@ -83,31 +122,13 @@ const loadings = computed(() => Array.from({ length: perPage.value }))
       </div>
 
       <!-- Pagination -->
-      <div class="flex justify-center mt-8 mb-5" v-if="!ideasStore.loading && ideasStore.meta.total > perPage">
-        <nav class="flex items-center gap-1">
-          <button
-            class="px-4 py-2 bg-white border border-gray-300 rounded-md hover:bg-gray-100"
-            :disabled="page === 1"
-            @click="page--"
-          >
-            Previous
-          </button>
-          <span class="px-4 py-2 bg-white border border-gray-300 rounded-md">
-            {{ page }}
-          </span>
-          <button
-            class="px-4 py-2 bg-white border border-gray-300 rounded-md hover:bg-gray-100"
-            :disabled="page === ideasStore.meta.last_page"
-            @click="page++"
-          >
-            Next
-          </button>
-        </nav>
-      </div>
+      <Pagination 
+        :meta="ideasStore.meta"
+        @update:page="handlePageChange"
+      />
     </div>
   </div>
 </template>
 
 <style scoped>
-
 </style>
