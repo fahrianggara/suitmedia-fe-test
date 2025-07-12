@@ -3,7 +3,7 @@
 </script>
 
 <template>
-<div class="container py-6 mt-[70px]">
+<div class="container py-6 mt-[80px]">
     <div class="max-w-3xl">
       <h1 class="text-3xl font-bold mb-3 text-primary">About Page</h1>
       <p class="text-gray-600 leading-7">

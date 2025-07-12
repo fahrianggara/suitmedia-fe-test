@@ -1,10 +1,14 @@
 <script setup>
-import { RouterView } from 'vue-router';
+import { RouterView, useRoute  } from 'vue-router';
 import Navbar from './components/Navbar.vue';
+
+const route = useRoute();
 </script>
 
 <template>
-  <Navbar />
+  <template v-if="!route.meta.hideNavbar">
+    <Navbar />
+  </template>
 
   <main class="flex flex-col">
     <RouterView />

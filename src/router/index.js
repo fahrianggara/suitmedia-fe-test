@@ -45,6 +45,13 @@ const router = createRouter({
       name: 'contact',
       component: ContactPage,
     },
+    // not found route
+    {
+      path: '/:pathMatch(.*)*',
+      name: 'not-found',
+      component: () => import('../pages/NotFoundPage.vue'),
+      meta: { hideNavbar: true }
+    }
   ],
 })
 

@@ -2,7 +2,7 @@
 @import 'tailwindcss';
 
 * {
-  font-family: 'Inter', sans-serif;
+  font-family: "Inter Var", sans-serif;
 }
 
 @theme {

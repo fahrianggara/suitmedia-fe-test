@@ -99,7 +99,8 @@ const loadings = computed(() => Array.from({ length: perPage.value }))
         <div
           v-for="(idea, index) in ideasStore.loading ? loadings : formattedIdeas"
           :key="ideasStore.loading ? index : idea.id"
-          class="bg-white rounded-lg shadow hover:shadow-lg transition-all hover:text-primary"
+          class="bg-white rounded-lg shadow hover:shadow-lg transition-all hover:text-primary cursor-pointer
+          transfrom translate-0 hover:-translate-y-1 duration-300 ease-in-out overflow-hidden"
         >
           <!-- Gambar -->
             <div class="w-full h-40 rounded-t-lg overflow-hidden">
