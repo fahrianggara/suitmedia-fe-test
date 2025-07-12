@@ -105,7 +105,7 @@ const loadings = computed(() => Array.from({ length: perPage.value }))
             <div class="w-full h-40 rounded-t-lg overflow-hidden">
             <div v-if="ideasStore.loading" class="animate-pulse bg-gray-200 w-full h-full"></div>
             <img v-else
-              :src="idea.imageUrl"
+              v-lazy="idea.imageUrl"
               :alt="`Image for ${idea.title}`"
               loading="lazy"
               class="w-full h-40 object-cover"
