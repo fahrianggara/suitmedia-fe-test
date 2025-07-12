@@ -18,6 +18,13 @@ export default defineConfig({
     },
   },
   server: {
-    allowedHosts: []
+    allowedHosts: [],
+    proxy: {
+      '/suitmedia-api': {
+        target: 'https://suitmedia-backend.suitdev.com/api',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/suitmedia-api/, ''),
+      }
+    }
   }
 })

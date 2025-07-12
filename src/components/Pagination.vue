@@ -61,11 +61,11 @@ const formatLabel = (label) => {
         @click="navigate(link.url)"
         v-html="formatLabel(link.label)"
         :class="[
-          'px-4 py-2 border rounded-md text-sm transition-colors',
+          'h-[40px] w-[40px] border rounded-md text-sm transition-all transform translate-y-0 duration-300 ease-in-out ',
           link.active
             ? 'bg-primary text-white border-primary cursor-default'
-            : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-100 cursor-pointer',
-          !link.url && 'opacity-50 cursor-not-allowed',
+            : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-100 cursor-pointer hover:-translate-y-[3px]',
+          !link.url && 'disabled:opacity-50 disabled:hover:-translate-y-0 disabled:cursor-default',
         ]"
       />
     </nav>
@@ -73,8 +73,5 @@ const formatLabel = (label) => {
 </template>
 
 <style scoped>
-button:disabled {
-  cursor: not-allowed;
-  opacity: 0.5;
-}
+
 </style>

@@ -118,7 +118,7 @@ const loadings = computed(() => Array.from({ length: perPage.value }))
           <div class="p-4">
             <!-- Tanggal -->
             <div v-if="ideasStore.loading" class="animate-pulse h-4 bg-gray-200 w-24 mb-2 rounded"></div>
-            <time v-else class="text-gray-500 text-[14px] mb-1 block uppercase">
+            <time v-else class="text-gray-500 text-[14px] mb-1 block">
               {{ idea.formattedDate }}
             </time>
 
@@ -128,7 +128,7 @@ const loadings = computed(() => Array.from({ length: perPage.value }))
               <div class="animate-pulse h-4 bg-gray-200 w-4/5 rounded"></div>
               <div class="animate-pulse h-4 bg-gray-200 w-3/5 rounded"></div>
             </div>
-            <h2 v-else class="text-[16px] line-clamp-3">
+            <h2 v-else class="text-[17px] line-clamp-3">
               {{ idea.title }}
             </h2>
           </div>
