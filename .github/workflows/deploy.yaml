@@ -1,0 +1,39 @@
+name: Deploy Suitmedia Frontend Test to Hosting
+
+on:
+  push:
+    branches:
+    - main # Deploy saat push ke branch utama
+
+jobs:
+  deploy:
+    name: Deploying...
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Create .env
+      run: |
+        echo "VITE_SUITMEDIA_API_URL=${{ secrets.SUITMEDIA_API_URL }}" >> .env
+    - name: Install Dependencies
+      run: npm install
+
+    - name: Build Project
+      run: npm run build
+
+    - name: Deploy project via FTP
+      uses: SamKirkland/FTP-Deploy-Action@4.3.1
+      with:
+        server: ${{ secrets.FTP_SERVER }}
+        username: ${{ secrets.FTP_USERNAME }}
+        password: ${{ secrets.FTP_PASSWORD }}
+        local-dir: dist/
+        server-dir: ${{ secrets.FTP_SERVER_DIR }}/
+        exclude: |
+          **/.git*
+          **/.git*/**
+          **/node_modules/**
+          **/src/**
+          **/tests/**
+          **/*.md
