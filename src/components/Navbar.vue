@@ -53,7 +53,7 @@ watch(isOpen, (newVal) => {
   >
     <nav class="container h-[70px] flex items-center justify-between">
       <div>
-        <img src="/logo.png" alt="Logo" class="h-16 object-contain" />
+        <img src="/logo.png" alt="Logo" class="h-12 object-contain" />
       </div>
 
       <!-- Desktop Menu -->

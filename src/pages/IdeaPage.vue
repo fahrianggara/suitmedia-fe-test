@@ -5,12 +5,15 @@ import Filtering from '@/components/Ideas/Filtering.vue'
 import { ref, onMounted, watch, computed } from 'vue'
 import { useIdeasStore } from '@/stores/ideas'
 import { formatDate } from '@/composables/date'
+import { useRoute, useRouter } from 'vue-router'
 
-const perPage = ref(10)
-const sortBy = ref('-published_at')
-const page = ref(1)
-
+const route = useRoute()
+const router = useRouter()
 const ideasStore = useIdeasStore()
+
+const page = ref(Number(route.query.page) || 1)
+const perPage = ref(Number(route.query.perPage) || 10)
+const sortBy = ref(route.query.sortBy || '-published_at')
 
 const fetch = () => {
   ideasStore.fetchData({ 
@@ -25,25 +28,36 @@ const handlePageChange = (newPage) => {
   page.value = newPage
 }
 
-// Fetch on mount
-onMounted(() => {
-  fetch()
+// Watch & sync URL
+watch([page, perPage, sortBy], () => {
+  router.replace({
+    query: {
+      page: page.value,
+      perPage: perPage.value,
+      sortBy: sortBy.value,
+    }
+  })
 })
 
-// Fetch when filters change (reset to page 1)
+// Watch filter changes → reset page
 watch([perPage, sortBy], () => {
   page.value = 1
   fetch()
 })
 
-// Fetch when page changes
+// Watch page change
 watch(page, (newPage, oldPage) => {
-  if (newPage !== oldPage) fetch()
+  if (newPage !== oldPage) {
+    fetch()
+  }
 })
+
+// Fetch on mount
+onMounted(fetch)
 
 // Format ideas with computed property
 const formattedIdeas = computed(() => {
-  return ideasStore.ideas.map((idea) => {
+  return ideasStore.ideas.map((idea, index) => {
     const pickImage = (group) =>
       Array.isArray(group)
         ? group.find(item => item.mime?.startsWith('image/'))?.url
@@ -52,8 +66,7 @@ const formattedIdeas = computed(() => {
     const imageUrl =
       pickImage(idea.medium_image) ||
       pickImage(idea.small_image) ||
-      pickImage(idea.large_image) ||
-      'https://placehold.co/600x400?text=No+Image';
+      (index % 2 === 0 ? '/thumbnail-1.jpg' : '/thumbnail-2.jpg')
 
     return {
       ...idea,
@@ -89,16 +102,16 @@ const loadings = computed(() => Array.from({ length: perPage.value }))
           class="bg-white rounded-lg shadow hover:shadow-lg transition-all hover:text-primary"
         >
           <!-- Gambar -->
-          <div class="w-full h-40 rounded-t-lg overflow-hidden">
+            <div class="w-full h-40 rounded-t-lg overflow-hidden">
             <div v-if="ideasStore.loading" class="animate-pulse bg-gray-200 w-full h-full"></div>
             <img v-else
               :src="idea.imageUrl"
               :alt="`Image for ${idea.title}`"
               loading="lazy"
               class="w-full h-40 object-cover"
-              @error="(e) => e.target.src = 'https://placehold.co/600x400?text=' + idea.title"
+              @error="(e) => e.target.src = (index % 2 === 0 ? '/thumbnail-1.jpg' : '/thumbnail-2.jpg')"
             />
-          </div>
+            </div>
 
           <!-- Konten -->
           <div class="p-4">

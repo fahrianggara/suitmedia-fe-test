@@ -1,6 +1,4 @@
 <script setup>
-import { readonly } from 'vue'
-
 const props = defineProps({
   meta: Object,
 })
@@ -12,10 +10,12 @@ const navigate = (url) => {
   try {
     let pageNumber
     
-    if (url.startsWith('http')) {
+    if (url.startsWith('http')) { // Full URL
       const parsed = new URL(url)
       pageNumber = parsed.searchParams.get('page[number]') || parsed.searchParams.get('page')
-    } else {
+    } 
+    
+    else { // Relative URL
       const urlParams = new URLSearchParams(url.split('?')[1])
       pageNumber = urlParams.get('page[number]') || urlParams.get('page')
     }
@@ -52,7 +52,7 @@ const formatLabel = (label) => {
 
 <template>
   <div v-if="meta?.links?.length" class="flex justify-center mt-8 mb-5">
-    <nav class="flex flex-wrap items-center gap-1">
+    <nav class="flex flex-wrap justify-center items-center gap-1">
       <button
         v-for="(link, i) in meta.links"
         :key="i"
