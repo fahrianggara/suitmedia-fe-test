@@ -1,6 +1,6 @@
 <script setup>
 import Menu from './Menu.vue'
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted, watch } from 'vue'
 
 const isOpen = ref(false)
 const isScrollingDown = ref(false)
@@ -13,7 +13,10 @@ const toggleMenu = () => {
 }
 
 const closeMenu = () => isOpen.value = false
-const handleResize = () => { if (useIsMobile) closeMenu() }
+const handleResize = () => { 
+  if (useIsMobile) closeMenu()
+  closeMenu() // optional
+}
 let lastScrollY = window.scrollY
 
 const handleScroll = () => {
@@ -33,8 +36,12 @@ onUnmounted(() => {
   window.removeEventListener('scroll', handleScroll)
   window.removeEventListener('resize', handleResize)
 })
-</script>
 
+// prevent body overflow when menu is open
+watch(isOpen, (newVal) => {
+  document.body.classList.toggle('overflow-hidden', newVal)
+})
+</script>
 
 <template>
   <header
