@@ -1,8 +1,11 @@
 <script setup>
+import { useLenis } from '@/composables/useLenis'
+
 const props = defineProps({
   meta: Object,
 })
 const emit = defineEmits(['update:page'])
+const { lenis } = useLenis()
 
 const navigate = (url) => {
   if (!url) return
@@ -23,11 +26,19 @@ const navigate = (url) => {
     emit('update:page', Number(pageNumber))
 
     // scroll to ideas-list - 100
-    const ideasList = document.getElementById('ideas-list')
-    if (ideasList) {
-      const offsetTop = ideasList.offsetTop - 50
+    const target = document.getElementById('ideas-list')
+    if (target && lenis.value) {
+      lenis.value.scrollTo(target, {
+        offset: -50,
+        duration: 1.2,
+        easing: (t) => 1 - Math.pow(1 - t, 4),
+      })
+    }
+
+    // fallback for browsers without Lenis
+    else if (target) {
       window.scrollTo({
-        top: offsetTop,
+        top: target.offsetTop - 50,
         behavior: 'smooth',
       })
     }

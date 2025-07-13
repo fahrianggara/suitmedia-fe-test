@@ -2,7 +2,7 @@
 import { ref, watch, onMounted, onUnmounted } from 'vue'
 import Lenis from 'lenis'
 
-export function useLenis({ duration = 1.5 } = {}) {
+export function useLenis({ duration = 1.1 } = {}) {
   const isMobile = ref(window.innerWidth < 768)
   const lenis = ref(null)
 
