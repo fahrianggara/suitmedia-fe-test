@@ -15,7 +15,7 @@ const toggleMenu = () => {
 const closeMenu = () => isOpen.value = false
 const handleResize = () => { 
   if (useIsMobile) closeMenu()
-  closeMenu() // optional
+  closeMenu()
 }
 let lastScrollY = window.scrollY
 
@@ -24,7 +24,7 @@ const handleScroll = () => {
   isScrollingDown.value = currentY > lastScrollY
   isAtTop.value = currentY <= 10
   lastScrollY = currentY
-  closeMenu() // optional
+  closeMenu()
 }
 
 onMounted(() => {
@@ -52,9 +52,9 @@ watch(isOpen, (newVal) => {
     ]"
   >
     <nav class="container h-[70px] flex items-center justify-between">
-      <div>
+      <router-link to="/" class="flex items-center">
         <img src="/logo.png" alt="Logo" class="h-12 object-contain" />
-      </div>
+      </router-link>
 
       <!-- Desktop Menu -->
       <div class="menu hidden md:block" v-if="!isOpen">

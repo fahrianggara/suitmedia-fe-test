@@ -2,7 +2,7 @@
 @import 'tailwindcss';
 
 * {
-  font-family: "Inter Var", sans-serif;
+  font-family: 'Inter Var', sans-serif;
 }
 
 @theme {
@@ -187,4 +187,8 @@
 }
 .animate-pulse {
   animation: pulse 1.5s ease-in-out infinite;
+}
+
+.banner {
+  clip-path: polygon(0 0, 100% 0, 100% 65%, 0 100%);
 }
