@@ -12,12 +12,12 @@ export function useBannerScroll() {
     if (bannerRef.value) {
       bannerRef.value.style.backgroundPositionY = `${scrollY * 0.5}px`
 
-      if (!isMobile.value) {
-        const size = Math.min(100 + scrollY * 0.1, 200)
-        bannerRef.value.style.backgroundSize = `${size}%`
-      } else {
-        bannerRef.value.style.backgroundSize = 'cover'
-      }
+      // if (!isMobile.value) {
+      //   const size = Math.min(100 + scrollY * 0.1, 200)
+      //   bannerRef.value.style.backgroundSize = `${size}%`
+      // } else {
+      //   bannerRef.value.style.backgroundSize = 'cover'
+      // }
     }
 
     if (textRef.value) {
@@ -38,7 +38,7 @@ export function useBannerScroll() {
   onMounted(() => {
     if (bannerRef.value) {
       bannerRef.value.style.backgroundPositionY = '0px'
-      bannerRef.value.style.backgroundSize = isMobile.value ? 'cover' : '100%'
+      // bannerRef.value.style.backgroundSize = isMobile.value ? 'cover' : '100%'
     }
 
     if (textRef.value) {
