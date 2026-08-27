@@ -1,11 +1,12 @@
 <script setup>
-import { useLenis } from '@/composables/useLenis'
+// Lenis intentionally disabled; original implementation kept for reference.
+// import { useLenis } from '@/composables/useLenis'
 
 const props = defineProps({
   meta: Object,
 })
 const emit = defineEmits(['update:page'])
-const { lenis } = useLenis()
+// const { lenis } = useLenis()
 
 const navigate = (url) => {
   if (!url) return
@@ -27,16 +28,8 @@ const navigate = (url) => {
 
     // scroll to ideas-list - 100
     const target = document.getElementById('ideas-list')
-    if (target && lenis.value) {
-      lenis.value.scrollTo(target, {
-        offset: -50,
-        duration: 1.2,
-        easing: (t) => 1 - Math.pow(1 - t, 4),
-      })
-    }
-
-    // fallback for browsers without Lenis
-    else if (target) {
+    // Lenis disabled; keep browser-native smooth scroll fallback only.
+    if (target) {
       window.scrollTo({
         top: target.offsetTop - 50,
         behavior: 'smooth',
